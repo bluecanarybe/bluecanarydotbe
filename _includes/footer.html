@@ -1,0 +1,27 @@
+<!-- Footer -->
+<footer id="footer">
+  <section id="one" class="wrapper special">
+	<div class="inner">
+<h3>Information Security Certifications</h3>
+<p>Certified Information Security Professional (CISSP) - <a href="https://www.youracclaim.com/badges/98fa5f0b-34b1-4d18-84e0-7c1eae52f441">License number 670544</a></p>
+<p>Offensive Security Certified Professional (OSCP) - <a href="https://www.youracclaim.com/badges/cebdaab5-ebde-4998-8ebe-9ab8b31e5d95/linked_in_profile">License number 0S-41052</a></p>
+  <ul class="icons">
+    {% for socloc in site.social %}
+    {% if socloc[1] %}
+    {% if socloc[0] == 'email' %}
+    <li><a target="_blank" href="{{ socloc[1] }}" class="icon fa-envelope-o"
+           ><span class="label">E-mail</span></a></li>
+    {% else %}
+    <li><a target="_blank" href="{{ socloc[1] }}" class="icon fa-{{ socloc[0] }}"
+           ><span class="label">{{ socloc[0] }}</span></a></li>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  </ul>
+  <ul class="copyright">
+    <li>{{ thisyear }} Blue Canary CommV | Mispelbilk 7, 8310 BRUGGE | VAT BE0735536548 | IBAN BE55 7370 5138 1044</li>
+      <p>Build with <a href="http://jekyllrb.com" target="_blank">Jekyll</a>, <a href="http://html5up.net" target="_blank">HTML5 UP</a> and<span class="love"> ❤ </span>by Blue Canary</p>
+  </ul>
+  </div>
+  </section>
+</footer>

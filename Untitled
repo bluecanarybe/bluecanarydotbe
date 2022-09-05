@@ -1,0 +1,792 @@
+$(document).ready(function() {
+	$('input[type="number"]').change(function() {
+		doRecalculation();
+	})
+
+    $('#nf_income').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_income_value_period_one').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_income_value_period_two').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_income_rate').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_income_municipaltaxes').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_income_date_from').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_income_date_till').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_income_value_old').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_tax').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_tax_value').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_tax_rate').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_tax_date_from').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_tax_date_till').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_tax_value_old').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_interest').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_interest_value').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_interest_date_from').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_interest_date_till').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_interest_municipaltaxes').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_interest_value_old').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_dividend').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_dividend_value').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_dividend_date_from').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_dividend_date_till').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_dividend_municipaltaxes').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_dividend_value_old').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_inherit').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_inherit_value').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_inherit_line').change(function() {
+        doRecalculation();
+    });
+
+    $('#nf_inherit_filed').keyup(function() {
+        doRecalculation();
+    });
+
+    $('#nf_inherit_date').change(function() {
+        doRecalculation();
+    });
+    $('#nf_verjaard').change(function() {
+        doRecalculation();
+    });
+    $('#nf_verjaard_value').keyup(function() {
+        doRecalculation();
+    });
+
+    doRecalculation();
+});
+
+function doRecalculation(){
+    /* -------------------- Niet aangegeven inkomen (start) -------------------- */
+    if($('#nf_income').is(':checked')){
+        $('#nf_income_details').css('display', 'block');
+
+        /*
+        Neem alle variabele getallen
+        - bedrag tussen 2009 - 2011
+        - bedrag tussen 2012 - 2014
+        - Gemeentebelasting
+         */
+
+        var incomeValue = parseFloat($('#nf_income_value').val());
+        var incomeTaxes = parseFloat($('#nf_income_tax').val())
+        var incomeMunicipalTaxes = parseFloat($('#nf_income_municipaltaxes').val());
+
+        /*
+        Definieer de belastingen
+         */
+
+        var incomeProcentPuntVerhoging = 25;
+        var incomeTotalTax = incomeTaxes + incomeProcentPuntVerhoging;
+
+        /*
+        Bereken totaal te betalen belasting
+         */
+        var incomeTaxToPay = incomeValue * (incomeTotalTax / 100);
+
+        /*
+        Bereken totaal te betalen gemeentebelasting
+         */
+
+        var incomeMunicipalTaxToPay =  incomeTaxToPay * (incomeMunicipalTaxes / 100);
+
+        /*
+        Bereken totaal te betalen
+         */
+
+        var totalTaxToPayIncome = incomeMunicipalTaxToPay + incomeTaxToPay;
+
+        /*
+        Vul alle waardes in en toon
+         */
+
+        if(isNumber(totalTaxToPayIncome)){
+            $('#nf_income_newlaw_tax').css('display', 'block');
+            $('#nf_income_newlaw_penalty').css('display', 'block');
+            $('#nf_income_newlaw_due').css('display', 'block');
+
+            $('#nf_income_newlaw_error').css('display', 'none');
+
+            $('#nf_income_newlaw_tax').html('Belasting + Belastingverhoging = &euro;' + incomeTaxToPay);
+            $('#nf_income_newlaw_municipaltaxes').html('+ Gemeentebelasting (' + incomeMunicipalTaxes + '%) = &euro;' + incomeMunicipalTaxToPay);
+
+            $('#nf_income_newlaw_due').html('&euro;' + totalTaxToPayIncome);
+        }else{
+            $('#nf_income_newlaw_tax').css('display', 'none');
+            $('#nf_income_newlaw_penalty').css('display', 'none');
+            $('#nf_income_newlaw_due').css('display', 'none');
+            $('#nf_income_newlaw_tax_outdated').css('display', 'none');
+
+            $('#nf_income_newlaw_error').css('display', 'block');
+        }//if
+    }else{
+        var newLawDue = makeFloatUp(0);
+
+        $('#nf_income_details').css('display', 'none');
+
+        $('#nf_income_newlaw_tax').css('display', 'none');
+        $('#nf_income_newlaw_penalty').css('display', 'none');
+        $('#nf_income_newlaw_due').css('display', 'none');
+        $('#nf_income_newlaw_municipaltaxes').css('display', 'none');
+
+        $('#nf_income_newlaw_error').css('display', 'none');
+    }//if
+    /* -------------------- Niet aangegeven inkomen (stop) -------------------- */
+
+    /* -------------------- Niet aangegeven BTW (start) -------------------- */
+    if($('#nf_tax').is(':checked')){
+        $('#nf_tax_details').css('display', 'block');
+
+        var taxValue = parseFloat($('#nf_tax_value').val());
+        var taxRate = parseFloat($('#nf_tax_rate').val());
+
+        if($('#nf_income').is(':checked')){
+            var taxNewlawPenaltyProcentPunt = 0;
+        }
+        else {
+            var taxNewlawPenaltyProcentPunt = 25;
+        }
+
+        var newTaxRate = taxRate + taxNewlawPenaltyProcentPunt;
+        var lawPenalty = taxValue * (newTaxRate / 100);
+
+        if(isNumber(lawPenalty)){
+            $('#nf_tax_newlaw_tax').css('display', 'block');
+            $('#nf_tax_newlaw_penalty').css('display', 'block');
+            $('#nf_tax_newlaw_due').css('display', 'block');
+            $('#nf_tax_newlaw_error').css('display', 'none');
+            $('#nf_tax_newlaw_tax').html('Belasting + verhoging = &euro;' + lawPenalty);
+            $('#nf_tax_newlaw_due').html('&euro;' + lawPenalty);
+        }else{
+            $('#nf_tax_newlaw_tax').css('display', 'none');
+            $('#nf_tax_newlaw_penalty').css('display', 'none');
+            $('#nf_tax_newlaw_due').css('display', 'none');
+            $('#nf_tax_newlaw_tax_outdated').css('display', 'none');
+
+            $('#nf_tax_newlaw_error').css('display', 'block');
+        }//if
+    }else{
+        var taxNewlawDue = makeFloatUp(0);
+
+        $('#nf_tax_details').css('display', 'none');
+
+        $('#nf_tax_newlaw_tax').css('display', 'none');
+        $('#nf_tax_newlaw_penalty').css('display', 'none');
+        $('#nf_tax_newlaw_due').css('display', 'none');
+
+        $('#nf_tax_newlaw_error').css('display', 'none');
+    }//if
+    /* -------------------- Niet aangegeven BTW (stop) -------------------- */
+
+    /* -------------------- Niet aangegeven intresten (start) -------------------- */
+    if($('#nf_interest').is(':checked')){
+        $('#nf_interest_details').css('display', 'block');
+        $('#nf_interest_newlaw_extrainfo').css('display', 'block');
+
+        var interestValuePeriodOne = parseFloat($('#nf_interest_value_period_one').val());
+        var interestValuePeriodTwo = parseFloat($('#nf_interest_value_period_two').val());
+		var interestValuePeriodThree = parseFloat($('#nf_interest_value_period_three').val());
+		var interestValuePeriodFour = parseFloat($('#nf_interest_value_period_four').val());
+        var interestMunicipalTaxes = parseFloat($('#nf_interest_municipaltaxes').val());
+
+        var interestTaxPeriodOne = 50;
+        var interestTaxPeriodTwo = 52;
+		var interestTaxPeriodThree = 55;
+		var interestTaxPeriodFour = 53; //not used
+
+        var taxPeriodOne = interestValuePeriodOne * (interestTaxPeriodOne / 100);
+        var taxPeriodTwo = interestValuePeriodTwo * (interestTaxPeriodTwo / 100);
+		var taxPeriodThree = interestValuePeriodThree * (interestTaxPeriodThree / 100);
+		var taxPeriodFour = interestValuePeriodFour * (interestTaxPeriodFour / 100);
+
+        var totalTaxPeriods = taxPeriodOne + taxPeriodTwo + taxPeriodThree + taxPeriodFour;
+
+        var municipalTax = totalTaxPeriods * (interestMunicipalTaxes / 100);
+
+        var totalTaxToPayInterest = totalTaxPeriods + municipalTax;
+
+        if(isNumber(totalTaxToPayInterest)){
+            $('#nf_interest_newlaw_tax').css('display', 'block');
+            $('#nf_interest_newlaw_penalty').css('display', 'block');
+            $('#nf_interest_newlaw_due').css('display', 'block');
+
+            $('#nf_interest_newlaw_error').css('display', 'none');
+
+            $('#nf_interest_newlaw_tax').html('Belasting + verhoging = &euro;' + totalTaxPeriods);
+            $('#nf_interest_newlaw_municipaltaxes').html('+ Gemeentebelasting (' + interestMunicipalTaxes + '%) = &euro;' + municipalTax);
+
+            $('#nf_interest_newlaw_due').html('&euro;' + totalTaxToPayInterest);
+        }else{
+            $('#nf_interest_newlaw_tax').css('display', 'none');
+            $('#nf_interest_newlaw_penalty').css('display', 'none');
+            $('#nf_interest_newlaw_due').css('display', 'none');
+
+            $('#nf_interest_newlaw_error').css('display', 'block');
+        }//if
+    }else{
+        var interestNewlawDue = makeFloatUp(0);
+
+        $('#nf_interest_details').css('display', 'none');
+
+        $('#nf_interest_newlaw_tax').css('display', 'none');
+        $('#nf_interest_newlaw_penalty').css('display', 'none');
+        $('#nf_interest_newlaw_due').css('display', 'none');
+
+        $('#nf_interest_newlaw_error').css('display', 'none');
+
+        $('#nf_interest_newlaw_extrainfo').css('display', 'none');
+    }//if
+    /* -------------------- Niet aangegeven intresten (stop) -------------------- */
+
+    /* -------------------- Niet aangegeven dividenden (start) -------------------- */
+    if($('#nf_dividend').is(':checked')){
+        $('#nf_dividend_details').css('display', 'block');
+
+        var dividendValue = parseFloat($('#nf_dividend_value_period_one').val());
+		var dividendValueTwo = parseFloat($('#nf_dividend_value_period_two').val());
+		var dividendValueThree = parseFloat($('#nf_dividend_value_period_three').val());
+
+        var dividendRate = 25;
+        var dividendProcentPunt = 25;
+
+        var totalDividendRate = dividendRate + dividendProcentPunt;
+		var totalDividendRateTwo = 52;
+		var totalDividendRateThree = 55;
+
+        var dividendMunicipalTaxes = parseFloat($('#nf_dividend_municipaltaxes').val());
+
+        var taxToPayOne = dividendValue * (totalDividendRate / 100);
+		var taxToPayTwo = dividendValueTwo * (totalDividendRateTwo / 100);
+		var taxToPayThree = dividendValueThree * (totalDividendRateThree / 100);
+
+		var taxToPay = taxToPayOne + taxToPayTwo + taxToPayThree;
+
+
+        var municipalTaxToPay = taxToPay * (dividendMunicipalTaxes / 100);
+
+        var totalTaxToPayDividend = taxToPay + municipalTaxToPay;
+
+        if(isNumber(totalTaxToPayDividend)){
+            $('#nf_dividend_newlaw_tax').css('display', 'block');
+            $('#nf_dividend_newlaw_penalty').css('display', 'block');
+            $('#nf_dividend_newlaw_due').css('display', 'block');
+
+            $('#nf_dividend_newlaw_error').css('display', 'none');
+
+            $('#nf_dividend_newlaw_tax').html('Belasting + verhoging = &euro;' + taxToPay);
+            $('#nf_dividend_newlaw_municipaltaxes').html('+ Gemeentebelasting (' + dividendMunicipalTaxes + '%) = &euro;' + municipalTaxToPay);
+
+            $('#nf_dividend_newlaw_due').html('&euro;' + totalTaxToPayDividend);
+        }else{
+            $('#nf_dividend_newlaw_tax').css('display', 'none');
+            $('#nf_dividend_newlaw_penalty').css('display', 'none');
+            $('#nf_dividend_newlaw_due').css('display', 'none');
+            $('#nf_dividend_newlaw_tax_outdated').css('display', 'none');
+
+            $('#nf_dividend_newlaw_error').css('display', 'block');
+        }//if
+    }else{
+        var dividendNewlawDue = makeFloatUp(0);
+
+        $('#nf_dividend_details').css('display', 'none');
+
+        $('#nf_dividend_newlaw_tax').css('display', 'none');
+        $('#nf_dividend_newlaw_penalty').css('display', 'none');
+        $('#nf_dividend_newlaw_due').css('display', 'none');
+
+        $('#nf_dividend_newlaw_error').css('display', 'none');
+    }//if
+    /* -------------------- Niet aangegeven dividenden (stop) -------------------- */
+
+    /* -------------------- Niet aangegeven verjaar kapitaal (start) -------------------- */
+    if($('#nf_verjaard').is(':checked')){
+        $('#nf_verjaard_details').css('display', 'block');
+
+        var verjaardValue = parseFloat($('#nf_verjaard_value').val());
+        var verjaardTax = 40;
+
+
+        var totalVerjaardTax = verjaardValue * (verjaardTax / 100);
+
+        if(isNumber(totalVerjaardTax)){
+            $('#nf_verjaard_newlaw_tax').css('display', 'block');
+            $('#nf_verjaard_newlaw_penalty').css('display', 'block');
+            $('#nf_verjaard_newlaw_due').css('display', 'block');
+            $('#nf_verjaard_newlaw_error').css('display', 'none');
+            $('#nf_verjaard_newlaw_tax').html('Belasting = &euro;' + totalVerjaardTax);
+            $('#nf_verjaard_newlaw_due').html('&euro;' + totalVerjaardTax);
+        }else{
+            $('#nf_verjaard_newlaw_tax').css('display', 'none');
+            $('#nf_verjaard_newlaw_penalty').css('display', 'none');
+            $('#nf_verjaard_newlaw_due').css('display', 'none');
+            $('#nf_verjaard_newlaw_tax_outdated').css('display', 'none');
+            $('#nf_verjaard_newlaw_error').css('display', 'block');
+        }//if
+    }else{
+        var totalVerjaardTax = makeFloatUp(0);
+        $('#nf_verjaard_details').css('display', 'none');
+        $('#nf_verjaard_newlaw_tax').css('display', 'none');
+        $('#nf_verjaard_newlaw_penalty').css('display', 'none');
+        $('#nf_verjaard_newlaw_due').css('display', 'none');
+        $('#nf_verjaard_newlaw_error').css('display', 'none');
+    }//if
+    /* -------------------- Niet aangegeven verjaar kapitaal (stop) -------------------- */
+
+    /* -------------------- Niet aangegeven erfenis (start) -------------------- */
+    if($('#nf_inherit').is(':checked')){
+        $('#nf_inherit_details').css('display', 'block');
+
+        var inheritExpiration = $('#nf_inherit_date').val();
+
+        var inheritValue = parseFloat($('#nf_inherit_value').val());
+        var inheritLine = $('#nf_inherit_line').val();
+        var inheritFiled = parseFloat($('#nf_inherit_filed').val());
+        var inheritAll = inheritValue + inheritFiled;
+
+        var amountToTaxate = inheritValue - inheritFiled;
+
+        var oldDate = new Date(new Date().setFullYear(new Date().getFullYear() - 10))
+
+        if (oldDate.getYear() > inheritExpiration) {
+            alert('ok')
+        }
+
+        var currentYear = new Date().getFullYear();
+        var percent = 36.3;
+
+        if (currentYear == '2016') {
+            percent = 36.3;
+        }
+        if (currentYear == '2017') {
+            percent = 38;
+        }
+        if (currentYear == '2018') {
+            percent = 38
+        }
+        if (currentYear == '2019') {
+            percent = 39
+        }
+        if (currentYear == '2020') {
+            percent = 40
+        }
+
+        if(inheritExpiration <= oldDate.getFullYear()){
+            alert('Successiebelastingen die werden ontdoken verjaren in principe na 10 jaren en 5 maanden.  Voor oudere successiedossiers dient overleg met de BBI worden gepleegd, op basis waarvan de BBI kan beslissen om nog over te gaan tot taxatie aan een vast tarief van ' + percent + '%.');
+            $('#nf_inherit_date').val(oldDate.getFullYear() + 1);
+            inheritExpiration = oldDate.getFullYear() + 1;
+        }//if
+
+        // if(inheritLine == 'ouders'){
+        //     var inheritResidualValue = 0;
+        //     inheritResidualValue = amountToTaxate * 0.35;
+        //
+        //
+        // }else if(inheritLine == 'echtgenoten'){
+        //     var inheritResidualValue = 0;
+        //
+        //     if(inheritAll > 250000){
+        //         if(inheritFiled > 250000){
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritResidualValue = 250000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritAll;
+        //     }//if
+        //
+        //     if(inheritResidualValue > 50000){
+        //         if(inheritFiled > 50000){
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritResidualValue = 50000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritAll;
+        //     }//if
+        // }else if(inheritLine == 'broerzus'){
+        //     var inheritResidualValue = 0;
+        //
+        //     if(inheritAll > 125000){
+        //         if(inheritFiled > 125000){
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritResidualValue = 125000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritAll;
+        //     }//if
+        //
+        //     if(inheritResidualValue > 75000){
+        //         if(inheritFiled > 75000){
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritResidualValue = 75000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritAll;
+        //     }//if
+        // }else if(inheritLine == 'ander'){
+        //     var inheritResidualValue = 0;
+        //
+        //     if(inheritAll > 125000){
+        //         if(inheritFiled > 125000){
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritResidualValue = 125000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritAll;
+        //     }//if
+        //
+        //     if(inheritResidualValue > 75000){
+        //         if(inheritFiled > 75000){
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritResidualValue = 75000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritAll;
+        //     }//if
+        // }//if
+
+        if (inheritLine == 'ouders') {
+            var inheritNewlawTax = 0;
+            var inheritResidualValue = 0;
+
+            inheritResidualValue = amountToTaxate * 0.35;
+        }
+        if (inheritLine == 'echtgenoten') {
+            var inheritNewlawTax = 0;
+            var inheritResidualValue = 0;
+
+            inheritResidualValue = amountToTaxate * 0.35;
+        }
+        if (inheritLine == 'broerzus') {
+            var inheritNewlawTax = 0;
+            var inheritResidualValue = 0;
+
+            inheritResidualValue = amountToTaxate * 0.35;
+        }
+        if (inheritLine == 'ander') {
+            var inheritNewlawTax = 0;
+            var inheritResidualValue = 0;
+
+            inheritResidualValue = amountToTaxate * 0.70;
+        }
+
+
+
+        // if(inheritLine == 'ouders'){
+        //     var inheritNewlawTax = 0;
+        //     var inheritResidualValue = 0;
+        //
+        //     if(inheritAll > 250000){
+        //         var inheritNewlawFraudePercentage = 32.4;
+        //
+        //         if(inheritFiled > 250000){
+        //             inheritNewlawTax += (inheritAll - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritNewlawTax += (inheritAll - 250000) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 250000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritValue;
+        //     }//if
+        //
+        //     if(inheritResidualValue > 50000){
+        //         var inheritNewlawFraudePercentage = 10.8;
+        //
+        //         if(inheritFiled > 50000){
+        //             inheritNewlawTax += (inheritResidualValue - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritNewlawTax += (inheritResidualValue - 50000) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 50000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritValue;
+        //     }//if
+        //
+        //     var inheritNewlawFraudePercentage = 3.6;
+        //
+        //     if(inheritFiled <= 50000){
+        //         inheritNewlawTax += (inheritResidualValue - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //     }//if
+        // }else if(inheritLine == 'echtgenoten'){
+        //     var inheritNewlawTax = 0;
+        //     var inheritResidualValue = 0;
+        //
+        //     if(inheritAll > 250000){
+        //         var inheritNewlawFraudePercentage = 32.4;
+        //
+        //         if(inheritFiled > 250000){
+        //             inheritNewlawTax += (inheritAll - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritNewlawTax += (inheritAll - 250000) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 250000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritValue;
+        //     }//if
+        //
+        //     if(inheritResidualValue > 50000){
+        //         var inheritNewlawFraudePercentage = 10.8;
+        //
+        //         if(inheritFiled > 50000){
+        //             inheritNewlawTax += (inheritResidualValue - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritNewlawTax += (inheritResidualValue - 50000) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 50000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritValue;
+        //     }//if
+        //
+        //     var inheritNewlawFraudePercentage = 3.6;
+        //
+        //     if(inheritFiled <= 50000){
+        //         inheritNewlawTax += (inheritResidualValue - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //     }//if
+        // }else if(inheritLine == 'broerzus'){
+        //     var inheritNewlawTax = 0;
+        //     var inheritResidualValue = 0;
+        //
+        //     if(inheritAll > 125000){
+        //         var inheritNewlawFraudePercentage = 65;
+        //
+        //         if(inheritFiled > 125000){
+        //             inheritNewlawTax += (inheritAll - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritNewlawTax += (inheritAll - 125000) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 125000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritValue;
+        //     }//if
+        //
+        //     if(inheritResidualValue > 75000){
+        //         var inheritNewlawFraudePercentage = 55;
+        //
+        //         if(inheritFiled > 75000){
+        //             inheritNewlawTax += (inheritResidualValue - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritNewlawTax += (inheritResidualValue - 75000) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 75000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritValue;
+        //     }//if
+        //
+        //     var inheritNewlawFraudePercentage = 30;
+        //
+        //     if(inheritFiled <= 75000){
+        //         inheritNewlawTax += (inheritResidualValue - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //     }//if
+        // }else if(inheritLine == 'ander'){
+        //     var inheritNewlawTax = 0;
+        //     var inheritResidualValue = 0;
+        //
+        //     if(inheritAll > 125000){
+        //         var inheritNewlawFraudePercentage = 65;
+        //
+        //         if(inheritFiled > 125000){
+        //             inheritNewlawTax += (inheritAll - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritNewlawTax += (inheritAll - 125000) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 125000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritValue;
+        //     }//if
+        //
+        //     if(inheritResidualValue > 75000){
+        //         var inheritNewlawFraudePercentage = 55;
+        //
+        //         if(inheritFiled > 75000){
+        //             inheritNewlawTax += (inheritResidualValue - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 0;
+        //         }else{
+        //             inheritNewlawTax += (inheritResidualValue - 75000) * inheritNewlawFraudePercentage / 100;
+        //             inheritResidualValue = 75000;
+        //         }//if
+        //     }else{
+        //         inheritResidualValue = inheritValue;
+        //     }//if
+        //
+        //     var inheritNewlawFraudePercentage = 45;
+        //
+        //     if(inheritFiled <= 75000){
+        //         inheritNewlawTax += (inheritResidualValue - inheritFiled) * inheritNewlawFraudePercentage / 100;
+        //     }//if
+        // }//if
+        //
+        // if(inheritExpiration >= 2003){
+        //     var inheritNewlawPenaltyPercentage = 20;
+        //
+        //     var inheritNewlawPenalty = makeFloatUp(inheritValue * inheritNewlawPenaltyPercentage / 100);
+        //     var inheritNewlawTaxOutdated = 0;
+        // }else{
+        //     // var inheritNewlawPenaltyPercentage = 0;
+        //     // var inheritNewlawPenalty = makeFloatUp(0);
+        //     // inheritNewlawTax = inheritValue * 35 / 100;
+        //
+        //     var inheritNewlawPenaltyPercentage = 0;
+        //     var inheritNewlawPenalty = makeFloatUp(0);
+        //     inheritNewlawTax = makeFloatUp(0);
+        //     var inheritNewlawTaxOutdated = makeFloatUp(inheritValue * 35 / 100);
+        // }//if
+
+
+        //var inheritNewlawDue = makeFloatUp(inheritNewlawTaxOutdated + inheritNewlawTax + inheritNewlawPenalty);
+
+        var inheritNewLawTax = inheritResidualValue;
+        var inheritNewlawDue = inheritResidualValue;
+        if(isNumber(inheritNewlawDue)){
+            $('#nf_inherit_newlaw_tax').css('display', 'block');
+            $('#nf_inherit_newlaw_penalty').css('display', 'block');
+            $('#nf_inherit_newlaw_due').css('display', 'block');
+
+            $('#nf_inherit_newlaw_error').css('display', 'none');
+
+            $('#nf_inherit_newlaw_tax').html('Belasting = &euro;' + inheritNewlawDue);
+            // $('#nf_inherit_newlaw_penalty').html('+ Belastingverhoging (' + inheritNewlawPenaltyPercentage + '%) = &euro;' + inheritNewlawPenalty);
+
+            if(inheritExpiration >= 2003){
+                $('#nf_inherit_newlaw_tax_outdated').css('display', 'none');
+            }else{
+                $('#nf_inherit_newlaw_tax_outdated').css('display', 'block');
+                $('#nf_inherit_newlaw_tax_outdated').html('+ Tarief verjaard (35%) = &euro;' + inheritNewlawTaxOutdated);
+            }//if
+
+            $('#nf_inherit_newlaw_due').html('&euro;' + inheritNewlawDue);
+        }else{
+            $('#nf_inherit_newlaw_tax').css('display', 'none');
+            $('#nf_inherit_newlaw_penalty').css('display', 'none');
+            $('#nf_inherit_newlaw_due').css('display', 'none');
+            $('#nf_inherit_newlaw_tax_outdated').css('display', 'none');
+
+            $('#nf_inherit_newlaw_error').css('display', 'block');
+        }//if
+    }else{
+        var inheritNewlawDue = makeFloatUp(0);
+
+        $('#nf_inherit_details').css('display', 'none');
+
+        $('#nf_inherit_newlaw_tax').css('display', 'none');
+        $('#nf_inherit_newlaw_penalty').css('display', 'none');
+        $('#nf_inherit_newlaw_due').css('display', 'none');
+
+        $('#nf_inherit_newlaw_error').css('display', 'none');
+    }//if
+    /* -------------------- Niet aangegeven erfenis (stop) -------------------- */
+
+    var newlawDueTotal = 0;
+
+    if(isNumber(totalTaxToPayIncome)) newlawDueTotal += totalTaxToPayIncome;
+    if(isNumber(lawPenalty)) newlawDueTotal += lawPenalty;
+    if(isNumber(totalTaxToPayInterest)) newlawDueTotal += totalTaxToPayInterest;
+    if(isNumber(totalTaxToPayDividend)) newlawDueTotal += totalTaxToPayDividend;
+    if(isNumber(totalVerjaardTax)) newlawDueTotal += totalVerjaardTax;
+    if(isNumber(inheritNewlawDue)) newlawDueTotal += inheritNewlawDue;
+
+    if(isNumber(newlawDueTotal)){
+        $('#nf_newlaw_total').html('&euro;' + newlawDueTotal);
+    }else{
+        $('#nf_newlaw_total').html('');
+    }//if
+
+}//doRecalculation
+
+function isNumber(n){
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}//isNumber
+
+function makeFloatUp(floatNumber){
+    return Math.floor(floatNumber * 1000) / 1000;
+}//makeFloatUp
